@@ -36,7 +36,6 @@ func SaveData1(path string, data []byte) error {
 	return  fp.Sync()
 }
 
-// fix SaveData2
 func SaveData2(path string, data []byte) error {
 	tmp := fmt.Sprintf("%s.tmp.%d", path, randomInt())
 	fp, err := os.OpenFile(tmp, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0664)
@@ -57,5 +56,17 @@ func SaveData2(path string, data []byte) error {
 		return err
 	}
 	err = os.Rename(tmp, path)
+
+	dir := filepath .Dir(path)
+	fd, err := os.Open(dir)
+	if err != nil {
+		return err
+	}
+	defer fd.Close()
+
+	if err = fd.Sync(); err != nil {
+		return err
+	}
+
 	return err
 }
